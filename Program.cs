@@ -17,7 +17,7 @@ if (!string.IsNullOrWhiteSpace(databaseUrl))
 
     connectionString = 
         $"Host={uri.Host};" +
-        $"Port={uri.Port};" +
+        $"Port={(uri.Port > 0 ? uri.Port : 5432)};" +
         $"Database={uri.AbsolutePath.TrimStart('/')};" +
         $"Username={Uri.UnescapeDataString(userInfo[0])};" +
         $"Password={Uri.UnescapeDataString(userInfo[1])};" +
