@@ -8,16 +8,32 @@ var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddDbContext<AppDbContext>(options=>
-options.UseNpgsql(connectionString));
+var databaseUrl = builder.Configuration["DATABASE_URL"];
+
+if (!string.IsNullOrWhiteSpace(databaseUrl))
+{
+    var uri = new Uri(databaseUrl);
+    var userInfo = uri.UserInfo.Split(':', 2);
+
+    connectionString = 
+        $"Host={uri.Host};" +
+        $"Port={uri.Port};" +
+        $"Database={uri.AbsolutePath.TrimStart('/')};" +
+        $"Username={Uri.UnescapeDataString(userInfo[0])};" +
+        $"Password={Uri.UnescapeDataString(userInfo[1])};" +
+        "SSL Mode=Disable";
+}
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(connectionString));
 
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-using(var scope=app.Services.CreateAsyncScope())
+using (var scope = app.Services.CreateAsyncScope())
 {
-    var db=scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
 }
 
@@ -26,15 +42,15 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.MapGet("/api/tasks",async(AppDbContext db)=>
+app.MapGet("/api/tasks", async (AppDbContext db) =>
 {
-    var tasks=await db.Tasks.ToListAsync();
+    var tasks = await db.Tasks.ToListAsync();
     return Results.Ok(tasks);
 });
 
-app.MapGet("/", () => "Minimal API работает. Это добавлення строчка кода");
+app.MapGet("/", () => "Minimal API работает. Это добавленная строчка кода");
 
-app.MapGet("/api/info", ()=>
+app.MapGet("/api/info", () =>
 {
     return new
     {
@@ -44,10 +60,10 @@ app.MapGet("/api/info", ()=>
     };
 });
 
-app.MapGet("/api/tasks/{id}", async (int id, AppDbContext db)=>
+app.MapGet("/api/tasks/{id}", async (int id, AppDbContext db) =>
 {
-    var task = await db.Tasks.FirstOrDefaultAsync(x=>x.Id==id);
-    if(task==null)
+    var task = await db.Tasks.FirstOrDefaultAsync(x => x.Id == id);
+    if (task == null)
     {
         return Results.NotFound();
     }
@@ -55,22 +71,21 @@ app.MapGet("/api/tasks/{id}", async (int id, AppDbContext db)=>
     return Results.Ok(task);
 });
 
-app.MapGet("/api/tasks/search", async(string? search, AppDbContext db)=>
+app.MapGet("/api/tasks/search", async (string? search, AppDbContext db) =>
 {
-    var query=db.Tasks.AsQueryable();
-    if(!string.IsNullOrWhiteSpace(search))
+    var query = db.Tasks.AsQueryable();
+    if (!string.IsNullOrWhiteSpace(search))
     {
-        query=query.Where(x=>x.Name.ToLower().Contains(search.ToLower()));
+        query = query.Where(x => x.Name.ToLower().Contains(search.ToLower()));
     }
 
-    var tasks= await query.ToListAsync();
+    var tasks = await query.ToListAsync();
     return Results.Ok(tasks);
 });
 
 app.MapPost("/api/tasks", async (TaskModel task, AppDbContext db) =>
 {
     db.Tasks.Add(task);
-    
     await db.SaveChangesAsync();
 
     return Results.Created($"/api/tasks/{task.Id}", task);
@@ -113,23 +128,22 @@ app.MapDelete("/api/tasks/{id}", async (
     return Results.NoContent();
 });
 
-app.MapGet("/api/tasks/filter", async(AppDbContext db)=>
+app.MapGet("/api/tasks/filter", async (AppDbContext db) =>
 {
-    var tasks=await db.Tasks.Where(x=>x.Price>2000).ToListAsync();
-
+    var tasks = await db.Tasks.Where(x => x.Price > 2000).ToListAsync();
     return Results.Ok(tasks);
 });
 
-app.MapGet("/api.tasks/sorted",async(AppDbContext db)=>
+// Исправлен путь с точки на слэш (/api/tasks/sorted)
+app.MapGet("/api/tasks/sorted", async (AppDbContext db) =>
 {
-    var tasks = await db.Tasks.OrderBy(x=>x.Price).ToListAsync();
-
+    var tasks = await db.Tasks.OrderBy(x => x.Price).ToListAsync();
     return Results.Ok(tasks);
 });
 
-app.MapGet("/api/tasks/avaliable",async(AppDbContext db)=>
+app.MapGet("/api/tasks/avaliable", async (AppDbContext db) =>
 {
-    var tasks = await db.Tasks.Where(x=>x.IsAvaliable==true).ToListAsync();
+    var tasks = await db.Tasks.Where(x => x.IsAvaliable == true).ToListAsync();
     return Results.Ok(tasks);
 });
 
@@ -138,7 +152,7 @@ app.MapGet("/api/tasks/top-expensive-available", async (AppDbContext db) =>
     var tasks = await db.Tasks
         .Where(x => x.IsAvaliable == true)
         .OrderByDescending(x => x.Price)  
-        .Take(5)                   
+        .Take(5)                     
         .ToListAsync();
 
     return Results.Ok(tasks);
