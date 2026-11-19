@@ -177,3 +177,4 @@ C:\УЧЕБА\WT\wt-lab7-7postgres-efcore-liseychikov\bin\Debug\net10.0\tr\Micro
 C:\УЧЕБА\WT\wt-lab7-7postgres-efcore-liseychikov\bin\Debug\net10.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.MSBuild.resources.dll
 C:\УЧЕБА\WT\wt-lab7-7postgres-efcore-liseychikov\bin\Debug\net10.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.MSBuild.resources.dll
 C:\УЧЕБА\WT\wt-lab7-7postgres-efcore-liseychikov\bin\Debug\net10.0\runtimes\win\lib\net9.0\System.Windows.Extensions.dll
+C:\УЧЕБА\WT\wt-lab7-7postgres-efcore-liseychikov\obj\Debug\net10.0\wt-lab7-7postgres-efcore-liseychikov.sourcelink.json

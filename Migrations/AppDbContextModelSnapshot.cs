@@ -37,6 +37,10 @@ namespace wt_lab6_6minimalapi_liseychikov.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsAvaliable")
                         .HasColumnType("boolean");
 
@@ -57,6 +61,7 @@ namespace wt_lab6_6minimalapi_liseychikov.Migrations
                             Id = 1,
                             Category = "Базы данных",
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "",
                             IsAvaliable = true,
                             Name = "Проектирование базы данных",
                             Price = 2500
@@ -66,6 +71,7 @@ namespace wt_lab6_6minimalapi_liseychikov.Migrations
                             Id = 2,
                             Category = "Backend",
                             CreatedAt = new DateTime(2026, 1, 2, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "",
                             IsAvaliable = true,
                             Name = "Настройка эндпоинтов API",
                             Price = 1800
