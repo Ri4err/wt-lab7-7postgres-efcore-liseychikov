@@ -8,4 +8,5 @@ public class TaskModel
      public int Price { get; set; }
      public bool IsAvaliable { get; set; }
      public DateTime CreatedAt{get;set;}
+     public string Description {get;set;}="";
 }
